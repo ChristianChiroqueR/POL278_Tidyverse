@@ -1,0 +1,4326 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Estadística descriptiva con tidyverse</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Docente: Christian Chiroque Ruiz" />
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/useR.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/useR-fonts.css" rel="stylesheet" />
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Estadística descriptiva con tidyverse
+]
+.subtitle[
+## Estadística descriptiva con tidyverse
+]
+.author[
+### Docente: Christian Chiroque Ruiz
+]
+
+---
+
+
+
+
+
+layout: true
+class: animated, fadeIn
+
+---
+
+
+class: inverse
+
+# ¿Dónde estamos en el curso?
+
+
+- Introducción a la Estadística, tipos de variables y escalas de medición // Introducción al R y los elementos básicos
+
+- **Medidas de centralidad** // **Tidyverse: manipulación de datos y visualización**
+
+
+
+---
+
+# Medidas de tendencia central
+
+Las medidas de tendencia central son una herramienta estadística que se utiliza para resumir o describir un conjunto de datos mediante un valor que represente la "tendencia" o "centro" del conjunto de datos. Las tres medidas de tendencia central más comunes son la media aritmética, la mediana y la moda.
+
+
+---
+
+# Media o promedio
+
+Se puede aplicar a variables numéricas. 
+
+La media aritmética es el promedio de los valores en el conjunto de datos. Se obtiene sumando todos los valores y dividiendo por el número de valores.
+
+
+```r
+# Creo una variable
+vector_numerico&lt;-c(1,4,7,4,2,8,9,3)
+# Calculo la media
+mean(vector_numerico)
+```
+
+```
+[1] 4.8
+```
+---
+
+# Qué pasa si hay NA´s en mi vector?
+
+En el R los valores perdidos suelen ser un problema muy recurrente. Para ello, en este caso, podemos omitirlos dentro del cálculo. 
+
+
+```r
+# Creo una variable
+vector_numerico&lt;-c(1,4,7,NA,2,NA,9,3)
+# Calculo la media
+mean(vector_numerico)
+```
+
+```
+[1] NA
+```
+Tengo que activar el argumento "remover perdidos"
+
+
+```r
+mean(vector_numerico, na.rm = TRUE)
+```
+
+```
+[1] 4.3
+```
+
+
+
+---
+
+# Mediana
+
+Se puede aplicar a variables numéricas y ordinales. 
+
+La mediana es el valor central de un conjunto de datos ordenado. Es decir, si se ordenan los datos de menor a mayor, la mediana es el valor que está en el centro de la lista. Si el conjunto de datos tiene un número par de valores, la mediana se define como la media aritmética de los dos valores centrales.
+
+
+```r
+# Creo una variable
+vector_numerico&lt;-c(1,4,7,4,2,8,9,3)
+# Calculo la mediana
+median(vector_numerico)
+```
+
+```
+[1] 4
+```
+
+---
+
+# Moda
+
+Se puede aplicar a variables numéricas (?), ordinales y nominales. 
+
+La moda es el valor que aparece con mayor frecuencia en el conjunto de datos. En algunos casos, puede haber más de una moda o ninguna moda en absoluto.
+
+
+```r
+# Creo una variable
+vector_nominal&lt;-c("H", "M", "M", "M", "M", "H","H")
+# Puedo ver en una tabla simple (comando del paquete base)
+table(vector_nominal)
+```
+
+```
+vector_nominal
+H M 
+3 4 
+```
+
+---
+class: inverse, middle, center
+
+# Ahora el siguiente paso es enfrentarnos con una data real y para ello existe el Tidyverse
+
+
+
+---
+
+# Tidyverse
+
+*Tidyverse* es un conjunto de paquetes en R diseñados para ciencia de datos. 
+
+Manipular
+Transformar
+Explorar
+Visualizar. 
+
+```
+install.packages("tidyverse") # Sólo si lo necesitas
+library(tidyverse)
+```
+
+
+---
+
+# El objeto base en el Tidyverse
+
+- Se trabaja con objetos data.frame o tibble.
+- Se trabaja con data ordenada (tidy data):
+- Cada variable está en su propia columna. 
+- Cada observación o caso en su propia fila
+
+
+---
+
+# Cómo de escribe el código en el Tidyverse?
+
+Compara estas dos formas de escribir. 
+
+.pull-left[
+
+- Voy a la cocina y preparo cafe.
+
+- Voy a la cocina y me sirvo una taza de café.
+
+- Voy a la cocina y le agrego dos cucharadas de azúcar
+
+- Voy a la cocina y bebo el café
+
+]
+
+
+.pull-right[
+
+- Voy a la cocina, preparó el café, me sirvo una taza, le agrego dos cucharadas de azúcar y lo bebo.
+
+]
+
+---
+
+# Qué es el operador pipe?
+
+.pull-left[
+
+Operador que permite expresar de forma clara una secuencia de múltiples operaciones. 
+
+Es una sintaxis en cadena (tubería), de forma que el operador utiliza el output (‘la salida’) de una sentencia de código y la convierte en el input (‘el argumento’) de una nueva sentencia.
+
+Podemos interpretarlo como un “ENTONCES”.
+
+]
+
+
+.pull-right[
+
+- La salida (resultado) del código a la izquierda de |&gt; es argumento de la función de la derecha. 
+
+- Recientemente en la versión 4.1.0 de R se insertó la sintaxis del pipe nativo. 
+
+]
+
+---
+
+# Proceso del análisis de datos
+
+
+```r
+knitr::include_graphics("https://bookdown.org/paradinas_iosu/CursoR/images/procesar_datos.png")
+```
+
+&lt;img src="https://bookdown.org/paradinas_iosu/CursoR/images/procesar_datos.png" width="105%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Principales paquetes
+
+
+
+```r
+knitr::include_graphics("https://www.anabellelaurent.com/slides/datawrangling_tallerr_ecuador/images/tidyverseDS.png")
+```
+
+&lt;img src="https://www.anabellelaurent.com/slides/datawrangling_tallerr_ecuador/images/tidyverseDS.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# I. Importación de datos
+
+Para importar datos desde un archivo .xlsx podemos utilizar readxl.
+
+
+
+```r
+library(readxl)
+elecciones&lt;-read_xlsx("resultados_sv_2021.xlsx")
+str(elecciones)
+```
+
+```
+tibble [196 × 7] (S3: tbl_df/tbl/data.frame)
+ $ cod_dep_reniec : chr [1:196] "01" "01" "01" "01" ...
+ $ cod_prov_reniec: chr [1:196] "0101" "0102" "0103" "0104" ...
+ $ REGION         : chr [1:196] "AMAZONAS" "AMAZONAS" "AMAZONAS" "AMAZONAS" ...
+ $ PROVINCIA      : chr [1:196] "CHACHAPOYAS" "BAGUA" "BONGARA" "LUYA" ...
+ $ cod_prov_inei  : chr [1:196] "0101" "0102" "0103" "0105" ...
+ $ castillo       : chr [1:196] "55.15" "65.544" "57.451" "56.686" ...
+ $ keiko          : chr [1:196] "36.763" "28.8" "35.737" "37.088" ...
+```
+
+```r
+class(elecciones)
+```
+
+```
+[1] "tbl_df"     "tbl"        "data.frame"
+```
+---
+
+# I. Importación de datos
+
+También pudimos usar el paquete `rio`
+
+```
+library(rio)
+elecciones&lt;-import("resultados_sv_2021.xlsx")
+```
+Lo bueno de este paquete es que usa la misma sintaxis para archivos de distinto formato.
+
+---
+
+# II. Manipulación de datos con dplyr
+
+
+
+.pull-left[
+
+dplyr es una gramática de manipulación de datos que proporciona un conjunto consistente de verbos que lo ayudan a resolver los desafíos de manipulación de datos más comunes
+
+]
+
+
+.pull-right[
+
+```r
+knitr::include_graphics("https://robotwealth.com/wp-content/uploads/2020/04/dplyr.png")
+```
+
+&lt;img src="https://robotwealth.com/wp-content/uploads/2020/04/dplyr.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+# 2.1 Seleccionar columnas: función dplyr::select()
+
+- Elige variables en función de sus nombres
+
+- Puedes colocar los nombres de las columnas o los números respectivos.
+
+- Cuando deseas eliminar una variable lo escribes precedido por un "-"
+
+- Puedes utilizar también otras simbología como el rango. Por ejemplo si escribes select(1:5) significa que estás seleccionando las columnas del 1 al 5. 
+
+---
+
+count: false
+ 
+Función select()
+.panel1-chunk_40-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_40-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función select()
+.panel1-chunk_40-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_40-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_40-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_40-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_40-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+# 2.2 Cambiar el orden de las filas: función dplyr::arrange()
+
+- Cambia el orden de las filas
+
+- Lo ordena por default de menor a mayor. 
+
+- Si deseas un orden descendente colocas desc().
+
+- Puede soportar más de un criterio.
+
+
+---
+
+count: false
+ 
+Función arrange()
+.panel1-chunk_41-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_41-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función arrange()
+.panel1-chunk_41-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_41-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función arrange()
+.panel1-chunk_41-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  arrange(desc(castillo))  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_41-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA             castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                 &lt;chr&gt;    &lt;chr&gt;
+ 1 PUNO     AZANGARO              92.249   4.414
+ 2 AMAZONAS CONDORCANQUI          92.161   4.59 
+ 3 CUSCO    CHUMBIVILCAS          91.693   3.368
+ 4 CUSCO    CANAS                 91.364   4.168
+ 5 PUNO     EL COLLAO             91.065   5.093
+ 6 PUNO     HUANCANE              90.997   4.874
+ 7 PUNO     CHUCUITO              90.296   6.062
+ 8 PUNO     MOHO                  90.279   5.061
+ 9 PUNO     SAN ANTONIO DE PUTINA 89.659   6.491
+10 PUNO     MELGAR                89.261   6.37 
+# … with 186 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_41-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_41-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_41-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+# 2.3 Filtra las filas: función dplyr::filter()
+
+- Elige los casos en función de sus valores
+
+Dentro de esta función puedes poner criterios como:
+
+- castillo &gt; 50.00    PARA NUMÉRICAS
+
+- REGION == "LIMA"    PARA CATEGÓRICAS
+
+También soporta más de un criterio!
+
+---
+
+count: false
+ 
+Función filter()
+.panel1-chunk_42-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_42-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función filter()
+.panel1-chunk_42-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_42-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función filter()
+.panel1-chunk_42-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  arrange(desc(castillo))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_42-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA             castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                 &lt;chr&gt;    &lt;chr&gt;
+ 1 PUNO     AZANGARO              92.249   4.414
+ 2 AMAZONAS CONDORCANQUI          92.161   4.59 
+ 3 CUSCO    CHUMBIVILCAS          91.693   3.368
+ 4 CUSCO    CANAS                 91.364   4.168
+ 5 PUNO     EL COLLAO             91.065   5.093
+ 6 PUNO     HUANCANE              90.997   4.874
+ 7 PUNO     CHUCUITO              90.296   6.062
+ 8 PUNO     MOHO                  90.279   5.061
+ 9 PUNO     SAN ANTONIO DE PUTINA 89.659   6.491
+10 PUNO     MELGAR                89.261   6.37 
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función filter()
+.panel1-chunk_42-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  arrange(desc(castillo)) %&gt;%
+  filter(castillo &gt; 50.00)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_42-auto[
+
+```
+# A tibble: 141 × 4
+   REGION   PROVINCIA             castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                 &lt;chr&gt;    &lt;chr&gt;
+ 1 PUNO     AZANGARO              92.249   4.414
+ 2 AMAZONAS CONDORCANQUI          92.161   4.59 
+ 3 CUSCO    CHUMBIVILCAS          91.693   3.368
+ 4 CUSCO    CANAS                 91.364   4.168
+ 5 PUNO     EL COLLAO             91.065   5.093
+ 6 PUNO     HUANCANE              90.997   4.874
+ 7 PUNO     CHUCUITO              90.296   6.062
+ 8 PUNO     MOHO                  90.279   5.061
+ 9 PUNO     SAN ANTONIO DE PUTINA 89.659   6.491
+10 PUNO     MELGAR                89.261   6.37 
+# … with 131 more rows
+```
+]
+
+---
+count: false
+ 
+Función filter()
+.panel1-chunk_42-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  arrange(desc(castillo)) %&gt;%
+  filter(castillo &gt; 50.00)
+```
+]
+ 
+.panel2-chunk_42-auto[
+
+```
+# A tibble: 141 × 4
+   REGION   PROVINCIA             castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                 &lt;chr&gt;    &lt;chr&gt;
+ 1 PUNO     AZANGARO              92.249   4.414
+ 2 AMAZONAS CONDORCANQUI          92.161   4.59 
+ 3 CUSCO    CHUMBIVILCAS          91.693   3.368
+ 4 CUSCO    CANAS                 91.364   4.168
+ 5 PUNO     EL COLLAO             91.065   5.093
+ 6 PUNO     HUANCANE              90.997   4.874
+ 7 PUNO     CHUCUITO              90.296   6.062
+ 8 PUNO     MOHO                  90.279   5.061
+ 9 PUNO     SAN ANTONIO DE PUTINA 89.659   6.491
+10 PUNO     MELGAR                89.261   6.37 
+# … with 131 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_42-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_42-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_42-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+# 2.4 Creación de nuevas variables: función dplyr::mutate()
+
+- Agrega nuevas variables que son funciones de variables existentes
+
+- Le puedes indicar cual será el nombre de la nueva varible colocando "nombre = operación a realizar"
+
+- Ahora bien, hay muchas operaciones que puedes implementar. Aquí hay algunas.
+
+---
+
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.763            
+ 2 AMAZONAS BAGUA                    65.5 28.8              
+ 3 AMAZONAS BONGARA                  57.5 35.737            
+ 4 AMAZONAS LUYA                     56.7 37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.672            
+ 6 AMAZONAS CONDORCANQUI             92.2 4.59              
+ 7 AMAZONAS UTCUBAMBA                61.8 32.466000000000001
+ 8 ANCASH   HUARAZ                   59.0 33.384            
+ 9 ANCASH   AIJA                     58.9 35.817            
+10 ANCASH   BOLOGNESI                61.9 32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo)) %&gt;%
+  mutate(keiko=as.numeric(keiko))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8 
+ 2 AMAZONAS BAGUA                    65.5 28.8 
+ 3 AMAZONAS BONGARA                  57.5 35.7 
+ 4 AMAZONAS LUYA                     56.7 37.1 
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7 
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5 
+ 8 ANCASH   HUARAZ                   59.0 33.4 
+ 9 ANCASH   AIJA                     58.9 35.8 
+10 ANCASH   BOLOGNESI                61.9 32.2 
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo)) %&gt;%
+  mutate(keiko=as.numeric(keiko)) %&gt;%
+  mutate(voto_total=castillo+keiko)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 5
+   REGION   PROVINCIA            castillo keiko voto_total
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8        91.9
+ 2 AMAZONAS BAGUA                    65.5 28.8        94.3
+ 3 AMAZONAS BONGARA                  57.5 35.7        93.2
+ 4 AMAZONAS LUYA                     56.7 37.1        93.8
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7        91.8
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59       96.8
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5        94.2
+ 8 ANCASH   HUARAZ                   59.0 33.4        92.4
+ 9 ANCASH   AIJA                     58.9 35.8        94.8
+10 ANCASH   BOLOGNESI                61.9 32.2        94.1
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función mutate()
+.panel1-chunk_43-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo)) %&gt;%
+  mutate(keiko=as.numeric(keiko)) %&gt;%
+  mutate(voto_total=castillo+keiko)
+```
+]
+ 
+.panel2-chunk_43-auto[
+
+```
+# A tibble: 196 × 5
+   REGION   PROVINCIA            castillo keiko voto_total
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8        91.9
+ 2 AMAZONAS BAGUA                    65.5 28.8        94.3
+ 3 AMAZONAS BONGARA                  57.5 35.7        93.2
+ 4 AMAZONAS LUYA                     56.7 37.1        93.8
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7        91.8
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59       96.8
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5        94.2
+ 8 ANCASH   HUARAZ                   59.0 33.4        92.4
+ 9 ANCASH   AIJA                     58.9 35.8        94.8
+10 ANCASH   BOLOGNESI                61.9 32.2        94.1
+# … with 186 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_43-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_43-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_43-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+---
+
+# 2.5 Resumir variables: función dplyr::summarise()
+
+Sirve para crear estadísticas resumen (con grupos o sin grupos)
+
+FUNCIONES VECTORIZADAS: Que se aplican a un VECTOR
+
+- Tendencia central: mean(), median()
+- Dispersión: sd(), IQR()
+- Rango: min(), max(), quantile()
+- Conteo: n(), n_distinct()
+
+---
+
+count: false
+ 
+Función summarise()
+.panel1-chunk_44-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_44-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_44-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_44-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_44-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),  #&lt;&lt;
+         keiko=as.numeric(keiko),  #&lt;&lt;
+         voto_total=castillo+keiko)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_44-auto[
+
+```
+# A tibble: 196 × 5
+   REGION   PROVINCIA            castillo keiko voto_total
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8        91.9
+ 2 AMAZONAS BAGUA                    65.5 28.8        94.3
+ 3 AMAZONAS BONGARA                  57.5 35.7        93.2
+ 4 AMAZONAS LUYA                     56.7 37.1        93.8
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7        91.8
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59       96.8
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5        94.2
+ 8 ANCASH   HUARAZ                   59.0 33.4        92.4
+ 9 ANCASH   AIJA                     58.9 35.8        94.8
+10 ANCASH   BOLOGNESI                61.9 32.2        94.1
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_44-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),
+         keiko=as.numeric(keiko),
+         voto_total=castillo+keiko) %&gt;%
+  summarise(Media=mean(castillo),  #&lt;&lt;
+            Mínimo=min(castillo),  #&lt;&lt;
+            Mediana=median(castillo),  #&lt;&lt;
+            Máximo=max(castillo)  #&lt;&lt;
+            )  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_44-auto[
+
+```
+# A tibble: 1 × 4
+  Media Mínimo Mediana Máximo
+  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+1  61.3      0    62.7   92.2
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_44-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),
+         keiko=as.numeric(keiko),
+         voto_total=castillo+keiko) %&gt;%
+  summarise(Media=mean(castillo),
+            Mínimo=min(castillo),
+            Mediana=median(castillo),
+            Máximo=max(castillo)
+            )
+```
+]
+ 
+.panel2-chunk_44-auto[
+
+```
+# A tibble: 1 × 4
+  Media Mínimo Mediana Máximo
+  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+1  61.3      0    62.7   92.2
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_44-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_44-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_44-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+Función summarise()
+.panel1-chunk_45-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_45-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_45-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_45-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función summarise()
+.panel1-chunk_45-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  summarise(n_distinct(REGION))  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_45-auto[
+
+```
+# A tibble: 1 × 1
+  `n_distinct(REGION)`
+                 &lt;int&gt;
+1                   25
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_45-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_45-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_45-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+# 2.6 Agrupar datos: función dplyr::group_by()
+
+- Agrupa los datos de acuerdo a categorías. Una vez agrupado, todos los cálculos sucesivos se realizarán por grupos. 
+
+- OJO: Si se desea desagrupar colocar ungroup() como una nueva sentencia 
+
+---
+
+count: false
+ 
+Función group_by()
+.panel1-chunk_46-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_46-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función group_by()
+.panel1-chunk_46-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_46-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función group_by()
+.panel1-chunk_46-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),  #&lt;&lt;
+         keiko=as.numeric(keiko))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_46-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8 
+ 2 AMAZONAS BAGUA                    65.5 28.8 
+ 3 AMAZONAS BONGARA                  57.5 35.7 
+ 4 AMAZONAS LUYA                     56.7 37.1 
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7 
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5 
+ 8 ANCASH   HUARAZ                   59.0 33.4 
+ 9 ANCASH   AIJA                     58.9 35.8 
+10 ANCASH   BOLOGNESI                61.9 32.2 
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función group_by()
+.panel1-chunk_46-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),
+         keiko=as.numeric(keiko)) %&gt;%
+  group_by(REGION)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_46-auto[
+
+```
+# A tibble: 196 × 4
+# Groups:   REGION [25]
+   REGION   PROVINCIA            castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8 
+ 2 AMAZONAS BAGUA                    65.5 28.8 
+ 3 AMAZONAS BONGARA                  57.5 35.7 
+ 4 AMAZONAS LUYA                     56.7 37.1 
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7 
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5 
+ 8 ANCASH   HUARAZ                   59.0 33.4 
+ 9 ANCASH   AIJA                     58.9 35.8 
+10 ANCASH   BOLOGNESI                61.9 32.2 
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función group_by()
+.panel1-chunk_46-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),
+         keiko=as.numeric(keiko)) %&gt;%
+  group_by(REGION) %&gt;%
+  summarise(Voto_Castillo=mean(castillo))  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_46-auto[
+
+```
+# A tibble: 25 × 2
+   REGION       Voto_Castillo
+   &lt;chr&gt;                &lt;dbl&gt;
+ 1 AMAZONAS              63.1
+ 2 ANCASH                61.4
+ 3 APURIMAC              78.3
+ 4 AREQUIPA              66.8
+ 5 AYACUCHO              77.6
+ 6 CAJAMARCA             68.8
+ 7 CUSCO                 78.6
+ 8 HUANCAVELICA          65.8
+ 9 HUANUCO               71.4
+10 ICA                   46.1
+# … with 15 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_46-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_46-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_46-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+# 2.7 Funciones complementarios del paquete `dplyr`
+
+- dplyr::count(): Cuenta el número de filas en cada grupo definido por la variable.
+
+---
+
+count: false
+ 
+Función count()
+.panel1-chunk_47-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_47-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_47-auto[
+
+```r
+elecciones %&gt;%
+  count("Región"=REGION, name = "Frecuencia")   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_47-auto[
+
+```
+# A tibble: 25 × 2
+   Región       Frecuencia
+   &lt;chr&gt;             &lt;int&gt;
+ 1 AMAZONAS              7
+ 2 ANCASH               20
+ 3 APURIMAC              7
+ 4 AREQUIPA              8
+ 5 AYACUCHO             11
+ 6 CAJAMARCA            13
+ 7 CUSCO                13
+ 8 HUANCAVELICA          7
+ 9 HUANUCO              11
+10 ICA                   5
+# … with 15 more rows
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_47-auto[
+
+```r
+elecciones %&gt;%
+  count("Región"=REGION, name = "Frecuencia") %&gt;%
+  mutate(Porcentaje=(Frecuencia/sum(Frecuencia))*100)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_47-auto[
+
+```
+# A tibble: 25 × 3
+   Región       Frecuencia Porcentaje
+   &lt;chr&gt;             &lt;int&gt;      &lt;dbl&gt;
+ 1 AMAZONAS              7       3.57
+ 2 ANCASH               20      10.2 
+ 3 APURIMAC              7       3.57
+ 4 AREQUIPA              8       4.08
+ 5 AYACUCHO             11       5.61
+ 6 CAJAMARCA            13       6.63
+ 7 CUSCO                13       6.63
+ 8 HUANCAVELICA          7       3.57
+ 9 HUANUCO              11       5.61
+10 ICA                   5       2.55
+# … with 15 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_47-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_47-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_47-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+# 2.7 Funciones complementarios del paquete `dplyr`
+
+- dplyr::rename(): Renombra las variables.
+
+- Primero debes escribir el nuevo nombre y luego el nombre original de la variable.
+
+---
+
+count: false
+ 
+Función count()
+.panel1-chunk_48-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_48-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_48-auto[
+
+```r
+elecciones %&gt;%
+  select(7)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_48-auto[
+
+```
+# A tibble: 196 × 1
+   keiko             
+   &lt;chr&gt;             
+ 1 36.763            
+ 2 28.8              
+ 3 35.737            
+ 4 37.088            
+ 5 38.672            
+ 6 4.59              
+ 7 32.466000000000001
+ 8 33.384            
+ 9 35.817            
+10 32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_48-auto[
+
+```r
+elecciones %&gt;%
+  select(7)%&gt;%
+  rename("Voto de Keiko F"=keiko)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_48-auto[
+
+```
+# A tibble: 196 × 1
+   `Voto de Keiko F` 
+   &lt;chr&gt;             
+ 1 36.763            
+ 2 28.8              
+ 3 35.737            
+ 4 37.088            
+ 5 38.672            
+ 6 4.59              
+ 7 32.466000000000001
+ 8 33.384            
+ 9 35.817            
+10 32.163            
+# … with 186 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_48-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_48-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_48-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+# 2.7 Funciones complementarios del paquete `dplyr`
+
+- dplyr::case_when(): La función case_when() del paquete tidyverse en R sirve para recodificar datos y crear nuevas variables o modificar variables existentes basándose en múltiples condiciones.
+
+- Permite evaluar varias condiciones utilizando una sintaxis similar a una instrucción "if-else". Esta función es particularmente útil cuando necesitamos recodificar una variable en varias categorías o cuando tenemos múltiples condiciones a evaluar.
+
+- Se coloca primero la condición (fórmula) seguido del símbolo ~ (alt+126) y la etiqueta. 
+
+- Al final se coloca TRUE, lo que indica todos aquellos casos que no cumplen con las condiciones anteriores. 
+
+---
+
+count: false
+ 
+Función count()
+.panel1-chunk_49-auto[
+
+```r
+elecciones   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_49-auto[
+
+```
+# A tibble: 196 × 7
+   cod_dep_reniec cod_prov_reniec REGION   PROVINCIA       cod_p…¹ casti…² keiko
+   &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;
+ 1 01             0101            AMAZONAS CHACHAPOYAS     0101    55.15   36.7…
+ 2 01             0102            AMAZONAS BAGUA           0102    65.544  28.8 
+ 3 01             0103            AMAZONAS BONGARA         0103    57.451  35.7…
+ 4 01             0104            AMAZONAS LUYA            0105    56.686  37.0…
+ 5 01             0105            AMAZONAS RODRIGUEZ DE M… 0106    53.112  38.6…
+ 6 01             0106            AMAZONAS CONDORCANQUI    0104    92.161  4.59 
+ 7 01             0107            AMAZONAS UTCUBAMBA       0107    61.776  32.4…
+ 8 02             0201            ANCASH   HUARAZ          0201    58.977  33.3…
+ 9 02             0202            ANCASH   AIJA            0202    58.935  35.8…
+10 02             0203            ANCASH   BOLOGNESI       0205    61.926  32.1…
+# … with 186 more rows, and abbreviated variable names ¹​cod_prov_inei,
+#   ²​castillo
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_49-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_49-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko             
+   &lt;chr&gt;    &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt;             
+ 1 AMAZONAS CHACHAPOYAS          55.15    36.763            
+ 2 AMAZONAS BAGUA                65.544   28.8              
+ 3 AMAZONAS BONGARA              57.451   35.737            
+ 4 AMAZONAS LUYA                 56.686   37.088            
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA 53.112   38.672            
+ 6 AMAZONAS CONDORCANQUI         92.161   4.59              
+ 7 AMAZONAS UTCUBAMBA            61.776   32.466000000000001
+ 8 ANCASH   HUARAZ               58.977   33.384            
+ 9 ANCASH   AIJA                 58.935   35.817            
+10 ANCASH   BOLOGNESI            61.926   32.163            
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_49-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),  #&lt;&lt;
+         keiko=as.numeric(keiko))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_49-auto[
+
+```
+# A tibble: 196 × 4
+   REGION   PROVINCIA            castillo keiko
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8 
+ 2 AMAZONAS BAGUA                    65.5 28.8 
+ 3 AMAZONAS BONGARA                  57.5 35.7 
+ 4 AMAZONAS LUYA                     56.7 37.1 
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7 
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5 
+ 8 ANCASH   HUARAZ                   59.0 33.4 
+ 9 ANCASH   AIJA                     58.9 35.8 
+10 ANCASH   BOLOGNESI                61.9 32.2 
+# … with 186 more rows
+```
+]
+
+---
+count: false
+ 
+Función count()
+.panel1-chunk_49-auto[
+
+```r
+elecciones %&gt;%
+  select(3,4,6,7) %&gt;%
+  mutate(castillo=as.numeric(castillo),
+         keiko=as.numeric(keiko)) %&gt;%
+  mutate(nivel_respaldo_castillo=  #&lt;&lt;
+        case_when(castillo&lt;30~"Bajo",  #&lt;&lt;
+                  castillo&lt;60~"Medio",  #&lt;&lt;
+                  TRUE~"Alto"))  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_49-auto[
+
+```
+# A tibble: 196 × 5
+   REGION   PROVINCIA            castillo keiko nivel_respaldo_castillo
+   &lt;chr&gt;    &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;                  
+ 1 AMAZONAS CHACHAPOYAS              55.2 36.8  Medio                  
+ 2 AMAZONAS BAGUA                    65.5 28.8  Alto                   
+ 3 AMAZONAS BONGARA                  57.5 35.7  Medio                  
+ 4 AMAZONAS LUYA                     56.7 37.1  Medio                  
+ 5 AMAZONAS RODRIGUEZ DE MENDOZA     53.1 38.7  Medio                  
+ 6 AMAZONAS CONDORCANQUI             92.2  4.59 Alto                   
+ 7 AMAZONAS UTCUBAMBA                61.8 32.5  Alto                   
+ 8 ANCASH   HUARAZ                   59.0 33.4  Medio                  
+ 9 ANCASH   AIJA                     58.9 35.8  Medio                  
+10 ANCASH   BOLOGNESI                61.9 32.2  Alto                   
+# … with 186 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-chunk_49-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_49-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_49-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+---
+
+# III. Visualización con ggplot2
+
+Es un sistema organizado de visualización de datos. Forma parte del conjunto de librerías llamado *tidyverse*. 
+
+La primera versión del paquete fue liberada por Hadley Wickham el 10 de junio de 2007, desde entonces el paquete se ha enriquecido con diferentes elementos. 
+
+Ggplot2 se ha convertido en el paquete de creación de visualizaciones más popular en el universo R por permitir de manera sencilla obtener gráficos de alta calidad. Incluso [otros programas de Data Science carecen de una herramienta como ggplot2](https://towardsdatascience.com/how-to-use-ggplot2-in-python-74ab8adec129).
+
+---
+
+# 3.1 Gramática de ggplot2
+
+
+.pull-left[
+
+- La gramática del ggplot2 se basa en el libro The Grammar of Graphics 
+
+- A diferencia de los gráficos con el paquete base donde creamos un gráfico a base de pasos sucesivos, ggplot2 se basa en una gramática de gráficos, añadiendo elementos a un graphical device , donde distintos componentes independientes se pueden combinar de muchas maneras diferentes.
+
+]
+
+
+.pull-right[
+
+![](https://m.media-amazon.com/images/I/41T80eRz+aL._SY344_BO1,204,203,200_.jpg)
+
+]
+
+---
+
+class: center
+
+# 3.2 Son 7 capas
+
+![](https://miro.medium.com/max/1100/1*l844RJyls1FraalChUtneQ.webp)
+
+
+---
+
+
+# 1ra Capa: Data
+
+Es la materia prima sobre la cual se van a posicionar el resto de capas y los datos que se desean representar. 
+
+El ggplot2 sólo acepta un tipo de datos: data.frames/ tibbles. No permite *vectores*.
+
+Vamos a utilizar la data del paquete {gapminder}.
+
+
+
+---
+
+
+# 1ra Capa: Data
+
+
+
+```r
+#install.packages("gapminder")
+library(gapminder)
+data&lt;-gapminder::gapminder
+head(data, 3)
+```
+
+```
+# A tibble: 3 × 6
+  country     continent  year lifeExp      pop gdpPercap
+  &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+1 Afghanistan Asia       1952    28.8  8425333      779.
+2 Afghanistan Asia       1957    30.3  9240934      821.
+3 Afghanistan Asia       1962    32.0 10267083      853.
+```
+
+
+---
+
+# 2da Capa: Aesthetics ("Estéticas")
+
+```
+aes()
+```
+
+- Indican las variables que se van a graficar, tanto en el **eje horizontal** (x) como en el **eje vertical** (y).
+
+- Ggplot2 no está pensado para gráficos tridimensionales, pero ciertamente podemos incluir una tercera variable, por ejemplo, indicando el **color** si deseamos identificar grupos, o indicando el tamaño (de los puntos en un scatterplot) para agregar una nueva variable cuantitativa.
+
+
+
+
+---
+
+# 3ra Capa: Geometric Objects (Objetos geométricos)
+
+- Funciones: geom_line(), geom_boxplot(), etc.
+
+- Indica qué tipo de gráfico (geometría) se va a construir: gráfico de barras, columnas, puntos, histográmas, boxplots, líneas, densidad, entre otros. 
+
+- En el paquete {ggplot2} existen 30 geometrías disponibles. Puedes ver el detalle de estos en la [documentación del paquete](https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf).
+
+- Cada geometría tiene su propia función y, como ya hemos visto, cada una puede tener distintos argumentos. 
+
+
+
+---
+class: inverse, middle, center
+
+# Estas 3 capas son el mínimo necesario para hacer un gráfico: 
+
+ Data +
+ Aesthetics +
+ Geometries
+ 
+ 
+ 
+---
+
+count: false
+ 
+Recuerda los pasos básicos
+.panel1-chunk_1-auto[
+
+```r
+data   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_1-auto[
+
+```
+# A tibble: 1,704 × 6
+   country     continent  year lifeExp      pop gdpPercap
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+ 1 Afghanistan Asia       1952    28.8  8425333      779.
+ 2 Afghanistan Asia       1957    30.3  9240934      821.
+ 3 Afghanistan Asia       1962    32.0 10267083      853.
+ 4 Afghanistan Asia       1967    34.0 11537966      836.
+ 5 Afghanistan Asia       1972    36.1 13079460      740.
+ 6 Afghanistan Asia       1977    38.4 14880372      786.
+ 7 Afghanistan Asia       1982    39.9 12881816      978.
+ 8 Afghanistan Asia       1987    40.8 13867957      852.
+ 9 Afghanistan Asia       1992    41.7 16317921      649.
+10 Afghanistan Asia       1997    41.8 22227415      635.
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Recuerda los pasos básicos
+.panel1-chunk_1-auto[
+
+```r
+data %&gt;%
+  ggplot()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_1-auto[
+![](Sesión-2_Código_files/figure-html/chunk_1_auto_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Recuerda los pasos básicos
+.panel1-chunk_1-auto[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_1-auto[
+![](Sesión-2_Código_files/figure-html/chunk_1_auto_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Recuerda los pasos básicos
+.panel1-chunk_1-auto[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  geom_histogram()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_1-auto[
+![](Sesión-2_Código_files/figure-html/chunk_1_auto_04_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+ 
+
+---
+
+count: false
+ 
+Probemos con argumentos y otras geometrías univariadas
+.panel1-primer_chunk-rotate[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  geom_histogram(binwidth=5,color="white")  #&lt;&lt;
+```
+]
+ 
+.panel2-primer_chunk-rotate[
+![](Sesión-2_Código_files/figure-html/primer_chunk_rotate_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Probemos con argumentos y otras geometrías univariadas
+.panel1-primer_chunk-rotate[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  geom_boxplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-primer_chunk-rotate[
+![](Sesión-2_Código_files/figure-html/primer_chunk_rotate_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Probemos con argumentos y otras geometrías univariadas
+.panel1-primer_chunk-rotate[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  geom_boxplot(notch=TRUE,color="blue")  #&lt;&lt;
+```
+]
+ 
+.panel2-primer_chunk-rotate[
+![](Sesión-2_Código_files/figure-html/primer_chunk_rotate_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-primer_chunk-rotate {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-primer_chunk-rotate {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-primer_chunk-rotate {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+
+```
+# A tibble: 1,704 × 6
+   country     continent  year lifeExp      pop gdpPercap
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+ 1 Afghanistan Asia       1952    28.8  8425333      779.
+ 2 Afghanistan Asia       1957    30.3  9240934      821.
+ 3 Afghanistan Asia       1962    32.0 10267083      853.
+ 4 Afghanistan Asia       1967    34.0 11537966      836.
+ 5 Afghanistan Asia       1972    36.1 13079460      740.
+ 6 Afghanistan Asia       1977    38.4 14880372      786.
+ 7 Afghanistan Asia       1982    39.9 12881816      978.
+ 8 Afghanistan Asia       1987    40.8 13867957      852.
+ 9 Afghanistan Asia       1992    41.7 16317921      649.
+10 Afghanistan Asia       1997    41.8 22227415      635.
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+
+```
+# A tibble: 10 × 6
+   country continent  year lifeExp      pop gdpPercap
+   &lt;fct&gt;   &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+ 1 Peru    Americas   1962    49.1 10516500     4957.
+ 2 Peru    Americas   1967    51.4 12132200     5788.
+ 3 Peru    Americas   1972    55.4 13954700     5938.
+ 4 Peru    Americas   1977    58.4 15990099     6281.
+ 5 Peru    Americas   1982    61.4 18125129     6435.
+ 6 Peru    Americas   1987    64.1 20195924     6361.
+ 7 Peru    Americas   1992    66.5 22430449     4446.
+ 8 Peru    Americas   1997    68.4 24748122     5838.
+ 9 Peru    Americas   2002    69.9 26769436     5909.
+10 Peru    Americas   2007    71.4 28674757     7409.
+```
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960) %&gt;%
+  ggplot()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+![](Sesión-2_Código_files/figure-html/chunk_4_auto_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960) %&gt;%
+  ggplot() +
+  aes(x = year)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+![](Sesión-2_Código_files/figure-html/chunk_4_auto_04_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960) %&gt;%
+  ggplot() +
+  aes(x = year) +
+  aes(y = gdpPercap)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+![](Sesión-2_Código_files/figure-html/chunk_4_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960) %&gt;%
+  ggplot() +
+  aes(x = year) +
+  aes(y = gdpPercap) +
+  geom_line()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+![](Sesión-2_Código_files/figure-html/chunk_4_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Mezclemos otras funciones del tidyverse y más de un gráfico
+.panel1-chunk_4-auto[
+
+```r
+data %&gt;%
+  filter(country=="Peru", year&gt;1960) %&gt;%
+  ggplot() +
+  aes(x = year) +
+  aes(y = gdpPercap) +
+  geom_line()+
+  geom_point()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_4-auto[
+![](Sesión-2_Código_files/figure-html/chunk_4_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_4-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_4-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_4-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+ 
+
+
+---
+
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+
+```
+# A tibble: 1,704 × 6
+   country     continent  year lifeExp      pop gdpPercap
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+ 1 Afghanistan Asia       1952    28.8  8425333      779.
+ 2 Afghanistan Asia       1957    30.3  9240934      821.
+ 3 Afghanistan Asia       1962    32.0 10267083      853.
+ 4 Afghanistan Asia       1967    34.0 11537966      836.
+ 5 Afghanistan Asia       1972    36.1 13079460      740.
+ 6 Afghanistan Asia       1977    38.4 14880372      786.
+ 7 Afghanistan Asia       1982    39.9 12881816      978.
+ 8 Afghanistan Asia       1987    40.8 13867957      852.
+ 9 Afghanistan Asia       1992    41.7 16317921      649.
+10 Afghanistan Asia       1997    41.8 22227415      635.
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+
+```
+# A tibble: 1,704 × 2
+   country     continent
+   &lt;fct&gt;       &lt;fct&gt;    
+ 1 Afghanistan Asia     
+ 2 Afghanistan Asia     
+ 3 Afghanistan Asia     
+ 4 Afghanistan Asia     
+ 5 Afghanistan Asia     
+ 6 Afghanistan Asia     
+ 7 Afghanistan Asia     
+ 8 Afghanistan Asia     
+ 9 Afghanistan Asia     
+10 Afghanistan Asia     
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+
+```
+# A tibble: 1,704 × 2
+# Groups:   continent [5]
+   country     continent
+   &lt;fct&gt;       &lt;fct&gt;    
+ 1 Afghanistan Asia     
+ 2 Afghanistan Asia     
+ 3 Afghanistan Asia     
+ 4 Afghanistan Asia     
+ 5 Afghanistan Asia     
+ 6 Afghanistan Asia     
+ 7 Afghanistan Asia     
+ 8 Afghanistan Asia     
+ 9 Afghanistan Asia     
+10 Afghanistan Asia     
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent) %&gt;%
+  filter(!duplicated(country))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+
+```
+# A tibble: 142 × 2
+# Groups:   continent [5]
+   country     continent
+   &lt;fct&gt;       &lt;fct&gt;    
+ 1 Afghanistan Asia     
+ 2 Albania     Europe   
+ 3 Algeria     Africa   
+ 4 Angola      Africa   
+ 5 Argentina   Americas 
+ 6 Australia   Oceania  
+ 7 Austria     Europe   
+ 8 Bahrain     Asia     
+ 9 Bangladesh  Asia     
+10 Belgium     Europe   
+# … with 132 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent) %&gt;%
+  filter(!duplicated(country)) %&gt;%
+  ungroup()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+
+```
+# A tibble: 142 × 2
+   country     continent
+   &lt;fct&gt;       &lt;fct&gt;    
+ 1 Afghanistan Asia     
+ 2 Albania     Europe   
+ 3 Algeria     Africa   
+ 4 Angola      Africa   
+ 5 Argentina   Americas 
+ 6 Australia   Oceania  
+ 7 Austria     Europe   
+ 8 Bahrain     Asia     
+ 9 Bangladesh  Asia     
+10 Belgium     Europe   
+# … with 132 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent) %&gt;%
+  filter(!duplicated(country)) %&gt;%
+  ungroup() %&gt;%
+  ggplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+![](Sesión-2_Código_files/figure-html/chunk_7_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent) %&gt;%
+  filter(!duplicated(country)) %&gt;%
+  ungroup() %&gt;%
+  ggplot()+
+  aes(x=continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+![](Sesión-2_Código_files/figure-html/chunk_7_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Y el gráfico de barras?
+.panel1-chunk_7-auto[
+
+```r
+data %&gt;%
+  select(country,continent) %&gt;%
+  group_by(continent) %&gt;%
+  filter(!duplicated(country)) %&gt;%
+  ungroup() %&gt;%
+  ggplot()+
+  aes(x=continent) +
+  geom_bar()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_7-auto[
+![](Sesión-2_Código_files/figure-html/chunk_7_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_7-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_7-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_7-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+ 
+
+---
+
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+
+```
+# A tibble: 1,704 × 6
+   country     continent  year lifeExp      pop gdpPercap
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+ 1 Afghanistan Asia       1952    28.8  8425333      779.
+ 2 Afghanistan Asia       1957    30.3  9240934      821.
+ 3 Afghanistan Asia       1962    32.0 10267083      853.
+ 4 Afghanistan Asia       1967    34.0 11537966      836.
+ 5 Afghanistan Asia       1972    36.1 13079460      740.
+ 6 Afghanistan Asia       1977    38.4 14880372      786.
+ 7 Afghanistan Asia       1982    39.9 12881816      978.
+ 8 Afghanistan Asia       1987    40.8 13867957      852.
+ 9 Afghanistan Asia       1992    41.7 16317921      649.
+10 Afghanistan Asia       1997    41.8 22227415      635.
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+
+```
+# A tibble: 1,704 × 4
+   country     continent  year gdpPercap
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;     &lt;dbl&gt;
+ 1 Afghanistan Asia       1952      779.
+ 2 Afghanistan Asia       1957      821.
+ 3 Afghanistan Asia       1962      853.
+ 4 Afghanistan Asia       1967      836.
+ 5 Afghanistan Asia       1972      740.
+ 6 Afghanistan Asia       1977      786.
+ 7 Afghanistan Asia       1982      978.
+ 8 Afghanistan Asia       1987      852.
+ 9 Afghanistan Asia       1992      649.
+10 Afghanistan Asia       1997      635.
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(  #&lt;&lt;
+              gdpPercap&lt;4000~ "Bajo GDPpc",  #&lt;&lt;
+              TRUE~ "Alto GDPpc"))   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+
+```
+# A tibble: 1,704 × 5
+   country     continent  year gdpPercap gdp_cat   
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;     
+ 1 Afghanistan Asia       1952      779. Bajo GDPpc
+ 2 Afghanistan Asia       1957      821. Bajo GDPpc
+ 3 Afghanistan Asia       1962      853. Bajo GDPpc
+ 4 Afghanistan Asia       1967      836. Bajo GDPpc
+ 5 Afghanistan Asia       1972      740. Bajo GDPpc
+ 6 Afghanistan Asia       1977      786. Bajo GDPpc
+ 7 Afghanistan Asia       1982      978. Bajo GDPpc
+ 8 Afghanistan Asia       1987      852. Bajo GDPpc
+ 9 Afghanistan Asia       1992      649. Bajo GDPpc
+10 Afghanistan Asia       1997      635. Bajo GDPpc
+# … with 1,694 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+              gdpPercap&lt;4000~ "Bajo GDPpc",
+              TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+
+```
+# A tibble: 142 × 5
+   country     continent  year gdpPercap gdp_cat   
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;     
+ 1 Afghanistan Asia       2007      975. Bajo GDPpc
+ 2 Albania     Europe     2007     5937. Alto GDPpc
+ 3 Algeria     Africa     2007     6223. Alto GDPpc
+ 4 Angola      Africa     2007     4797. Alto GDPpc
+ 5 Argentina   Americas   2007    12779. Alto GDPpc
+ 6 Australia   Oceania    2007    34435. Alto GDPpc
+ 7 Austria     Europe     2007    36126. Alto GDPpc
+ 8 Bahrain     Asia       2007    29796. Alto GDPpc
+ 9 Bangladesh  Asia       2007     1391. Bajo GDPpc
+10 Belgium     Europe     2007    33693. Alto GDPpc
+# … with 132 more rows
+```
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+              gdpPercap&lt;4000~ "Bajo GDPpc",
+              TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+![](Sesión-2_Código_files/figure-html/chunk_8_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+              gdpPercap&lt;4000~ "Bajo GDPpc",
+              TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent, fill=gdp_cat)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+![](Sesión-2_Código_files/figure-html/chunk_8_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Y el gráfico de barras apiladas?
+.panel1-chunk_8-auto[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+              gdpPercap&lt;4000~ "Bajo GDPpc",
+              TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent, fill=gdp_cat) +
+  geom_bar()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_8-auto[
+![](Sesión-2_Código_files/figure-html/chunk_8_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_8-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_8-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_8-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+count: false
+ 
+Puedes colocar grupos en uno de los ejes para gráficos univariados
+.panel1-chunk_9-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  select(-4, -5) %&gt;%  #&lt;&lt;
+  mutate(gdp_cat=case_when(  #&lt;&lt;
+    gdpPercap&lt;4000~ "Bajo GDPpc",  #&lt;&lt;
+    TRUE~ "Alto GDPpc")) %&gt;%  #&lt;&lt;
+  filter(year==2007)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_9-user[
+
+```
+# A tibble: 142 × 5
+   country     continent  year gdpPercap gdp_cat   
+   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;     
+ 1 Afghanistan Asia       2007      975. Bajo GDPpc
+ 2 Albania     Europe     2007     5937. Alto GDPpc
+ 3 Algeria     Africa     2007     6223. Alto GDPpc
+ 4 Angola      Africa     2007     4797. Alto GDPpc
+ 5 Argentina   Americas   2007    12779. Alto GDPpc
+ 6 Australia   Oceania    2007    34435. Alto GDPpc
+ 7 Austria     Europe     2007    36126. Alto GDPpc
+ 8 Bahrain     Asia       2007    29796. Alto GDPpc
+ 9 Bangladesh  Asia       2007     1391. Bajo GDPpc
+10 Belgium     Europe     2007    33693. Alto GDPpc
+# … with 132 more rows
+```
+]
+
+---
+count: false
+ 
+Puedes colocar grupos en uno de los ejes para gráficos univariados
+.panel1-chunk_9-user[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_9-user[
+![](Sesión-2_Código_files/figure-html/chunk_9_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Puedes colocar grupos en uno de los ejes para gráficos univariados
+.panel1-chunk_9-user[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent)+  #&lt;&lt;
+  aes(y=gdpPercap) +  #&lt;&lt;
+  aes(color=continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_9-user[
+![](Sesión-2_Código_files/figure-html/chunk_9_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Puedes colocar grupos en uno de los ejes para gráficos univariados
+.panel1-chunk_9-user[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent)+
+  aes(y=gdpPercap) +
+  aes(color=continent) +
+  geom_boxplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_9-user[
+![](Sesión-2_Código_files/figure-html/chunk_9_user_04_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_9-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_9-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_9-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+count: false
+ 
+Separando grupos por color
+.panel1-chunk_12-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  filter(continent=="Oceania") %&gt;%  #&lt;&lt;
+  ggplot()+  #&lt;&lt;
+  aes(x=year) +  #&lt;&lt;
+  aes(y=lifeExp)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_12-user[
+![](Sesión-2_Código_files/figure-html/chunk_12_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Separando grupos por color
+.panel1-chunk_12-user[
+
+```r
+data %&gt;%
+  filter(continent=="Oceania") %&gt;%
+  ggplot()+
+  aes(x=year) +
+  aes(y=lifeExp) +
+  aes(color=country)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_12-user[
+![](Sesión-2_Código_files/figure-html/chunk_12_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Separando grupos por color
+.panel1-chunk_12-user[
+
+```r
+data %&gt;%
+  filter(continent=="Oceania") %&gt;%
+  ggplot()+
+  aes(x=year) +
+  aes(y=lifeExp) +
+  aes(color=country) +
+  geom_line() +  #&lt;&lt;
+  geom_point()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_12-user[
+![](Sesión-2_Código_files/figure-html/chunk_12_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_12-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_12-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_12-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+Separando grupos sin color
+.panel1-chunk_13-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  filter(continent=="Oceania") %&gt;%  #&lt;&lt;
+  ggplot()+  #&lt;&lt;
+  aes(x=year) +  #&lt;&lt;
+  aes(y=lifeExp)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_13-user[
+![](Sesión-2_Código_files/figure-html/chunk_13_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Separando grupos sin color
+.panel1-chunk_13-user[
+
+```r
+data %&gt;%
+  filter(continent=="Oceania") %&gt;%
+  ggplot()+
+  aes(x=year) +
+  aes(y=lifeExp) +
+  aes(group=country)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_13-user[
+![](Sesión-2_Código_files/figure-html/chunk_13_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Separando grupos sin color
+.panel1-chunk_13-user[
+
+```r
+data %&gt;%
+  filter(continent=="Oceania") %&gt;%
+  ggplot()+
+  aes(x=year) +
+  aes(y=lifeExp) +
+  aes(group=country) +
+  geom_line() +  #&lt;&lt;
+  geom_point()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_13-user[
+![](Sesión-2_Código_files/figure-html/chunk_13_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_13-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_13-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_13-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+class: inverse, center, middle
+
+
+# Ahora vayamos con las demás capas!
+
+
+---
+
+# 4ta Capa: Facets (Facetas)
+
+.pull-left[
+
+- Permite descomponer un gráfico en subgráficos, también llamadas cuadrículas o facetas, según una variable **cualitativa**.
+
+- Sirve para comparar grupos, separándolos y así facilitando la identificación de diferencias significativas entre estos. 
+
+]
+
+
+.pull-right[
+
+![](http://www.sthda.com/sthda/RDoc/figure/ggplot2/ggplot2-facet-facet-with-one-variable-1.png)
+
+]
+
+
+---
+
+count: false
+ 
+Utilizamos facet_wrap para separar la figura por las categorías de UNA variable cualitativa
+.panel1-chunk_5-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  ggplot() +  #&lt;&lt;
+  aes(x = lifeExp) +  #&lt;&lt;
+  aes(y = gdpPercap) +  #&lt;&lt;
+  geom_point() +  #&lt;&lt;
+  aes(color=continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_5-user[
+![](Sesión-2_Código_files/figure-html/chunk_5_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Utilizamos facet_wrap para separar la figura por las categorías de UNA variable cualitativa
+.panel1-chunk_5-user[
+
+```r
+data %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  aes(y = gdpPercap) +
+  geom_point() +
+  aes(color=continent) +
+  facet_wrap(~continent)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_5-user[
+![](Sesión-2_Código_files/figure-html/chunk_5_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_5-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_5-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_5-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+ 
+
+---
+
+count: false
+ 
+Usamos facet_grid() para cruzar las categorías de dos variables cualitativas
+.panel1-chunk_6-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  filter(continent %in% c("Africa","Americas", "Europe")) %&gt;%  #&lt;&lt;
+  filter(year==2007) %&gt;%  #&lt;&lt;
+  mutate(gdp_cat=case_when(gdpPercap&lt;4000~ "Bajo GDPpc",  #&lt;&lt;
+                           TRUE~ "Alto GDPpc")) %&gt;%  #&lt;&lt;
+  ggplot() +  #&lt;&lt;
+  aes(x = lifeExp) +  #&lt;&lt;
+  aes(y = gdpPercap) +  #&lt;&lt;
+  geom_point() +  #&lt;&lt;
+  aes(color=continent)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_6-user[
+![](Sesión-2_Código_files/figure-html/chunk_6_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Usamos facet_grid() para cruzar las categorías de dos variables cualitativas
+.panel1-chunk_6-user[
+
+```r
+data %&gt;%
+  filter(continent %in% c("Africa","Americas", "Europe")) %&gt;%
+  filter(year==2007) %&gt;%
+  mutate(gdp_cat=case_when(gdpPercap&lt;4000~ "Bajo GDPpc",
+                           TRUE~ "Alto GDPpc")) %&gt;%
+  ggplot() +
+  aes(x = lifeExp) +
+  aes(y = gdpPercap) +
+  geom_point() +
+  aes(color=continent) +
+  facet_grid(cols = vars(continent), rows = vars(gdp_cat))  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_6-user[
+![](Sesión-2_Código_files/figure-html/chunk_6_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_6-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_6-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_6-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+ 
+
+
+---
+
+# 5ta Capa: Statistical Transformations (Tranformaciones Estadísticas)
+
+- Permite adicionar indicadores o estadísticos específicos calculados a partir de los datos de insumo. 
+
+- Por ejemplo, se puede colocar la media de una variable numérica. 
+
+
+
+---
+
+count: false
+ 
+Podemos graficar haciendo uso de stat_summary
+.panel1-chunk_11-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+    mutate(gdp_cat=case_when(  #&lt;&lt;
+    gdpPercap&lt;4000~ "Bajo GDPpc",  #&lt;&lt;
+    TRUE~ "Alto GDPpc")) %&gt;%  #&lt;&lt;
+    filter(year==2007) %&gt;%  #&lt;&lt;
+    ggplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_11-user[
+![](Sesión-2_Código_files/figure-html/chunk_11_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Podemos graficar haciendo uso de stat_summary
+.panel1-chunk_11-user[
+
+```r
+data %&gt;%
+    mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+    filter(year==2007) %&gt;%
+    ggplot()+
+    aes(x=continent, group=gdp_cat, color=gdp_cat)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_11-user[
+![](Sesión-2_Código_files/figure-html/chunk_11_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Podemos graficar haciendo uso de stat_summary
+.panel1-chunk_11-user[
+
+```r
+data %&gt;%
+    mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+    filter(year==2007) %&gt;%
+    ggplot()+
+    aes(x=continent, group=gdp_cat, color=gdp_cat)+
+    stat_summary(aes(y=gdpPercap),  #&lt;&lt;
+               fun ="mean",  #&lt;&lt;
+               geom="point")   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_11-user[
+![](Sesión-2_Código_files/figure-html/chunk_11_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Podemos graficar haciendo uso de stat_summary
+.panel1-chunk_11-user[
+
+```r
+data %&gt;%
+    mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+    filter(year==2007) %&gt;%
+    ggplot()+
+    aes(x=continent, group=gdp_cat, color=gdp_cat)+
+    stat_summary(aes(y=gdpPercap),
+               fun ="mean",
+               geom="point") +
+    stat_summary(aes(y=gdpPercap),  #&lt;&lt;
+               fun ="mean",  #&lt;&lt;
+               geom="line")  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_11-user[
+![](Sesión-2_Código_files/figure-html/chunk_11_user_04_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_11-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_11-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_11-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+Podemos agregarlo encima de otro gráfico
+.panel1-chunk_10-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  select(-4, -5) %&gt;%  #&lt;&lt;
+  mutate(gdp_cat=case_when(  #&lt;&lt;
+    gdpPercap&lt;4000~ "Bajo GDPpc",  #&lt;&lt;
+    TRUE~ "Alto GDPpc")) %&gt;%  #&lt;&lt;
+  filter(year==2007) %&gt;%  #&lt;&lt;
+  ggplot()+  #&lt;&lt;
+  aes(x=continent)+ aes(y=gdpPercap) +  #&lt;&lt;
+  aes(color=continent) +  #&lt;&lt;
+  geom_boxplot()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_10-user[
+![](Sesión-2_Código_files/figure-html/chunk_10_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Podemos agregarlo encima de otro gráfico
+.panel1-chunk_10-user[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent)+ aes(y=gdpPercap) +
+  aes(color=continent) +
+  geom_boxplot()+
+  stat_summary(fun ="mean",  #&lt;&lt;
+               colour="red",  #&lt;&lt;
+               size = 5,  #&lt;&lt;
+               geom="point")   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_10-user[
+![](Sesión-2_Código_files/figure-html/chunk_10_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Podemos agregarlo encima de otro gráfico
+.panel1-chunk_10-user[
+
+```r
+data %&gt;%
+  select(-4, -5) %&gt;%
+  mutate(gdp_cat=case_when(
+    gdpPercap&lt;4000~ "Bajo GDPpc",
+    TRUE~ "Alto GDPpc")) %&gt;%
+  filter(year==2007) %&gt;%
+  ggplot()+
+  aes(x=continent)+ aes(y=gdpPercap) +
+  aes(color=continent) +
+  geom_boxplot()+
+  stat_summary(fun ="mean",
+               colour="red",
+               size = 5,
+               geom="point") +
+  stat_summary(fun ="median",  #&lt;&lt;
+               colour="blue",  #&lt;&lt;
+               size = 5,  #&lt;&lt;
+               geom="point")  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_10-user[
+![](Sesión-2_Código_files/figure-html/chunk_10_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_10-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_10-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_10-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+---
+
+# 6ta Capa: Coordinates (Coordinadas)
+
+- Sirve para especificar cómo será presentada la información de las variables en los ejes horizontal y vertical. 
+
+
+---
+
+count: false
+ 
+Cambiamos la escala de uno de los ejes
+.panel1-chunk_19-user[
+
+```r
+data %&gt;%  #&lt;&lt;
+  filter(continent=="Asia", year==2007) %&gt;%  #&lt;&lt;
+  ggplot()+  #&lt;&lt;
+  aes(x = gdpPercap, y = lifeExp,  #&lt;&lt;
+      size = pop, color = country) %&gt;%  #&lt;&lt;
+  geom_point(show.legend = F, alpha = 0.7)   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_19-user[
+![](Sesión-2_Código_files/figure-html/chunk_19_user_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Cambiamos la escala de uno de los ejes
+.panel1-chunk_19-user[
+
+```r
+data %&gt;%
+  filter(continent=="Asia", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;%
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_19-user[
+![](Sesión-2_Código_files/figure-html/chunk_19_user_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Cambiamos la escala de uno de los ejes
+.panel1-chunk_19-user[
+
+```r
+data %&gt;%
+  filter(continent=="Asia", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;%
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',  #&lt;&lt;
+       y = 'Life Expectancy')  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_19-user[
+![](Sesión-2_Código_files/figure-html/chunk_19_user_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_19-user {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_19-user {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_19-user {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+---
+
+# 7ma Capa: Themes
+
+- Funciones: theme_gray(), theme_bw(), theme_classic()
+
+- Es la capa que le da la apariencia final que tendrá el gráfico. 
+
+- Se utiliza para personalizar el estilo del gráfico, pues [modifica elementos del gráfico](https://ggplot2.tidyverse.org/reference/theme.html) no ligados a los datos. 
+
+- Se puede crear un tema para que se adapte a la imagen institucional de una organización o al tipo de diseño de un documento específico. 
+
+- Se modifican temas tales como el color del fondo, los ejes, tamaño del gráfico, grilla, posición de los nombres, entre otros. 
+
+
+
+---
+
+count: false
+ 
+Cambiamos los temas de un gráfico de acuerdo a nuestro gusto
+.panel1-chunk_17-rotate[
+
+```r
+data %&gt;%
+  filter(continent=="Asia", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;%
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15))+
+  theme_gray()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_17-rotate[
+![](Sesión-2_Código_files/figure-html/chunk_17_rotate_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Cambiamos los temas de un gráfico de acuerdo a nuestro gusto
+.panel1-chunk_17-rotate[
+
+```r
+data %&gt;%
+  filter(continent=="Asia", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;%
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15))+
+  theme_bw()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_17-rotate[
+![](Sesión-2_Código_files/figure-html/chunk_17_rotate_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Cambiamos los temas de un gráfico de acuerdo a nuestro gusto
+.panel1-chunk_17-rotate[
+
+```r
+data %&gt;%
+  filter(continent=="Asia", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;%
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15))+
+  theme_classic()  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_17-rotate[
+![](Sesión-2_Código_files/figure-html/chunk_17_rotate_03_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_17-rotate {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_17-rotate {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_17-rotate {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+```r
+data %&gt;% 
+  filter(continent=="Asia", year==2007) %&gt;% 
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp,
+      size = pop, color = country) %&gt;% 
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15))+
+  theme_gray()+#ROTATE
+  theme_bw() +#ROTATE
+  theme_classic() #ROTATE
+```
+
+![](Sesión-2_Código_files/figure-html/chunk_17-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+class: inverse, center, middle
+
+# Extensiones de ggplot2
+
+Hay mucho más!
+
+120 extensiones disponibles en:
+
+https://exts.ggplot2.tidyverse.org/gallery/
+
+
+---
+# ggrepel
+
+
+- Proporciona geoms de texto y etiquetas para 'ggplot2' que ayudan a evitar la superposición de etiquetas de texto. 
+
+- Las etiquetas se repelen unas de otras y se alejan de los puntos de datos.
+
+
+```r
+# install.packages("ggrepel")
+library(ggrepel)
+```
+
+
+---
+
+count: false
+ 
+Vemos la diferencia entre ggplot2::geom_text() y repel::geom_text_repel()
+.panel1-chunk_16-rotate[
+
+```r
+data %&gt;%
+  filter(continent=="Americas", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp, label=country) +
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15)) +
+  geom_text()   #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_16-rotate[
+![](Sesión-2_Código_files/figure-html/chunk_16_rotate_01_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+Vemos la diferencia entre ggplot2::geom_text() y repel::geom_text_repel()
+.panel1-chunk_16-rotate[
+
+```r
+data %&gt;%
+  filter(continent=="Americas", year==2007) %&gt;%
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp, label=country) +
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15)) +
+  geom_text_repel(max.overlaps=15)  #&lt;&lt;
+```
+]
+ 
+.panel2-chunk_16-rotate[
+![](Sesión-2_Código_files/figure-html/chunk_16_rotate_02_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-chunk_16-rotate {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-chunk_16-rotate {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-chunk_16-rotate {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+```r
+data %&gt;% 
+  filter(continent=="Americas", year==2007) %&gt;% 
+  ggplot()+
+  aes(x = gdpPercap, y = lifeExp, label=country) +
+  geom_point(show.legend = F, alpha = 0.7) +
+  scale_x_log10() +
+  labs(x = 'GDP Per Capita',
+       y = 'Life Expectancy') +
+  scale_size(range = c(2, 15)) +
+  geom_text() + #ROTATE
+  geom_text_repel(max.overlaps=15) #ROTATE
+```
+
+![](Sesión-2_Código_files/figure-html/chunk_16-1.png)&lt;!-- --&gt;
+
+---
+
+# Notas finales: 
+
+- Puedes ver todos los detalles de ggplot2 en la guía elaborada por el mismo Posit:
+
+https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf
+
+- Te recomiendo que explores más sobre las extensiones del ggplot2 y también sobre los argumentos de cada una de las funciones vistas en clase. 
+
+- Qué gráficos has necesitado en tu día a día o te gustaría construir? Seguramente hay un paquete para ello en R. 
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 90%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": false,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
